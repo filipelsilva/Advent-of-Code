@@ -1,12 +1,7 @@
 import re
 import sys
 
-def check_presence(passport):
-    fields = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
-    for field in fields:
-        if len(re.findall(field, passport)) != 1:
-            return False
-    return True
+fields = set(["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"])
 
 def check_field(field):
     value = field[4:]
@@ -26,26 +21,33 @@ def check_field(field):
         return "ecl"
     if re.search("pid:[0-9]{9}", field):
         return "pid"
-    if re.search("cid:", field):
-        return "cid"
     return False
 
-def check_passport(passport):
-    fields = ""
-    for el in re.split(r"\s|\n", passport):
-        res = check_field(el)
-        if res != False:
-            fields += res
-    return check_presence(fields)
+with open("input", "r") as file:
+    txt = file.readlines()
 
-with open(sys.argv[1], "r") as file:
-    txt = file.read()
-
-passports = re.split(r"\n\n", txt)
 count = 0
+check = set()
 
-for passport in passports:
-    if check_passport(passport):
-        count += 1
+for passport in txt:
+    if passport == '\n':
+        # print(fields, check)
+        if fields == check:
+            count += 1
+
+        check = set()
+        continue
+
+    test = passport.rstrip("\n").split(" ")
+    # print(test)
+    for el in test:
+        tmp = check_field(el.rstrip("\n")) 
+        if tmp != False:
+            check.add(tmp)
+    # print(passport)
+
+# print(fields, check)
+if fields == check:
+    count += 1
 
 print(count)
