@@ -9,9 +9,7 @@ epsilon = ''
 
 for i in range(len(numbers[0])):
     digits = list(map(lambda x: x[i], numbers))
-    number_0s = digits.count('0')
-    number_1s = digits.count('1')
-    if number_0s > number_1s:
+    if digits.count('0') > digits.count('1'):
         gamma += '0'
         epsilon += '1'
     else:
@@ -20,8 +18,39 @@ for i in range(len(numbers[0])):
 
 gamma_dec = int(gamma, 2)
 epsilon_dec = int(epsilon, 2)
-
-print("Gamma: {}".format(gamma_dec))
-print("Epsilon: {}".format(epsilon_dec))
 print(gamma_dec * epsilon_dec)
-    
+
+oxygen = ''
+co2 = ''
+
+for i in range(len(numbers[0])):
+    numbers_oxy = []
+    for el in numbers:
+        if el[:i] == oxygen:
+            numbers_oxy += [el]
+    digits_oxy = list(map(lambda x: x[i], numbers_oxy))
+    if len(numbers_oxy) == 1:
+        oxygen = numbers_oxy[0]
+        break
+    elif digits_oxy.count('0') > digits_oxy.count('1'):
+        oxygen += '0'
+    else:
+        oxygen += '1'
+
+for i in range(len(numbers[0])):
+    numbers_co2 = []
+    for el in numbers:
+        if el[:i] == co2:
+            numbers_co2 += [el]
+    digits_co2 = list(map(lambda x: x[i], numbers_co2))
+    if len(numbers_co2) == 1:
+        co2 = numbers_co2[0]
+        break
+    elif digits_co2.count('0') > digits_co2.count('1'):
+        co2 += '1'
+    else:
+        co2 += '0'
+
+oxygen_dec = int(oxygen, 2)
+co2_dec = int(co2, 2)
+print(oxygen_dec * co2_dec)
