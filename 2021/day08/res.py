@@ -1,3 +1,5 @@
+import itertools
+
 mapping = {0: set('abcefg'), 1: set('cf'), 2: set('acdeg'), 3: set('acdfg'), 4: set('bcdf'), 5: set('abdfg'), 6: set('abdefg'), 7: set('acf'), 8: set('abcdefg'), 9: set('abcdfg')}
 
 with open('input', 'r') as file:
@@ -11,6 +13,7 @@ patterns = list(map(lambda x: [x[0].split(' '), x[1].split(' ')], patterns))
 # print(patterns)
 
 # part 1
+
 count = 0
 for el in patterns:
 	for digits in el[1]:
@@ -20,3 +23,6 @@ for el in patterns:
 print(count)
 
 # part 2
+
+permutations = list(itertools.permutations(list("abcdefg")))
+
