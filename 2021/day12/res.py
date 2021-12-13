@@ -53,8 +53,6 @@ def test(visited, el):
         else:
             return False
 
-# print(test(['start', 'HN', 'kj', 'HN', 'dc', 'dc', 'HN', 'end'], 'kj')) 
-
 def search_p2(current_cave, visited):
     if current_cave == "end" and visited.count("end") == 0:
         paths.append(visited + [current_cave,])
