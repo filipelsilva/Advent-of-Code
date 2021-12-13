@@ -26,3 +26,8 @@ print(count)
 
 permutations = list(itertools.permutations(list("abcdefg")))
 
+for perm in permutations:
+	changed = {"a": "", "b": "", "c": "", "d": "", "e": "", "f": "", "g": ""}
+	for old, new in zip("abcdefg", perm):
+		changed[old] = new
+	print(changed)
