@@ -16,6 +16,10 @@ count = dict((letter, 0) for letter in list(map(lambda x: x[1], connections)))
 #     for i in range(1, len(string)):
 #         count[string[i-1]] += 1
 
+# A fazer:
+# dict com {par: count de vezes que aparece o par}
+# recursivo
+# ir buscar dados para recursão ao dicionário com {par: letra do meio}
 
 
 print(max(count.values()) - min(count.values()))
