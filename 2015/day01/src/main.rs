@@ -1,7 +1,7 @@
 use std::fs;
 
 fn main() {
-    let input = fs::read_to_string("../input.txt").unwrap();
+    let input = fs::read_to_string("input.txt").unwrap();
     let indices = input.char_indices();
     let mut part1: isize = 0;
     let mut part2: usize = 0;
