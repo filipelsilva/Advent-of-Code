@@ -2,7 +2,7 @@ use std::fs;
 use regex::Regex;
 
 fn main() {
-	let input = fs::read_to_string("input2").unwrap();
+	let input = fs::read_to_string("input").unwrap();
 
 	let mut part1: i32 = 0;
 	let mut part2: i32 = 0;
@@ -30,7 +30,15 @@ fn main() {
 		part1 -= chars as i32;
 
 		// SECOND PART
-		todo!()
+		let mut new = line.len() + 2; // quotation marks, again
+		for chr in vec!['\\', '"'] {
+			new += line.matches(chr).count();
+		}
+
+		// println!("{} {},{}", line, code, new);
+
+		part2 += new as i32;
+		part2 -= code as i32;
 	}
 
 	println!("Part1: {}", part1);
