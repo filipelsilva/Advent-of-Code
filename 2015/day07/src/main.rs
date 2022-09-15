@@ -126,5 +126,12 @@ fn main() {
 	// 	println!("Operation of {}: {}", k, v);
 	// }
 
+	let mut values_orig: HashMap<String, u16> = HashMap::new();
+	values_orig.clone_from(&values);
+
 	println!("Part1: {}", solve(&wires, &mut values, "a".to_string()));
+
+	values_orig.insert("b".to_lowercase(), *values.get(&"a".to_string()).unwrap());
+
+	println!("Part2: {}", solve(&wires, &mut values_orig, "a".to_string()));
 }
