@@ -1,4 +1,5 @@
 use std::{fs, collections::HashMap};
+use std::fmt::Display;
 
 enum Operations {
 	Value(String),
@@ -9,9 +10,25 @@ enum Operations {
 	RShift(String, usize),
 }
 
+impl Display for Operations {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		match self {
+			Operations::Value(num) => write!(f, "Value: {}", num),
+			Operations::Not(num) => write!(f, "Not: {}", num),
+			Operations::And(num, num2) => write!(f, "And: {},{}", num, num2),
+			Operations::Or(num, num2) => write!(f, "Or: {},{}", num, num2),
+			Operations::LShift(num, offset) => write!(f, "LShift: {},{}", num, offset),
+			Operations::RShift(num, offset) => write!(f, "RShift: {},{}", num, offset),
+		}
+	}
+}
+
+
 fn solve(wires: &HashMap<String, Operations>, values: &mut HashMap<String, u16>, wire: String) -> u16 {
 	if values.contains_key(&wire) {
 		return *values.get(&wire).unwrap();
+	} else if let Ok(number) = wire.parse::<u16>() {
+		return number;
 	} else {
 		let op = wires.get(&wire).unwrap();
 		let value = match op {
@@ -33,6 +50,9 @@ fn solve(wires: &HashMap<String, Operations>, values: &mut HashMap<String, u16>,
 			Operations::LShift(num, offset) => solve(wires, values, num.to_string()) << offset,
 			Operations::RShift(num, offset) => solve(wires, values, num.to_string()) >> offset,
 		};
+
+		// println!("{}: {}", wire, value);
+
 		values.insert(wire, value);
 		value
 	}
@@ -77,11 +97,12 @@ fn main() {
 			continue 'outer;
 		}
 
-		let op2 = if op1 == "NOT" {
-			""
-		} else {
-			tokens.next().unwrap()
-		};
+		if op1 == "NOT" {
+			wires.insert(wire.to_string(), Operations::Not(operator.to_string()));
+			continue 'outer;
+		}
+
+		let op2 = tokens.next().unwrap();
 
 		// println!("{},{},{}", op1, operator, op2);
 
@@ -97,72 +118,13 @@ fn main() {
 		wires.insert(wire.to_string(), operation);
 	}
 
-	println!("{}", solve(&wires, &mut values, "a".to_string()));
-}
+	// for (k, v) in values.iter() {
+	// 	println!("Value of {}: {}", k, v);
+	// }
 
-fn test1() {
-	let input = fs::read_to_string("input").unwrap();
-	// let input = "123 -> x\n456 -> y\nx AND y -> d\nx OR y -> e\nx LSHIFT 2 -> f\ny RSHIFT 2 -> g\nNOT x -> h\nNOT y -> i\n";
+	// for (k, v) in wires.iter() {
+	// 	println!("Operation of {}: {}", k, v);
+	// }
 
-	let mut wires: HashMap<&str, u16> = HashMap::new();
-
-	let mut inits = input.lines().filter(|line| line.split(' ').count() == 3).collect::<Vec<&str>>();
-	inits.sort();
-
-	let mut ops = input.lines().filter(|line| line.split(' ').count() > 3).collect::<Vec<&str>>();
-	ops.sort();
-
-	for line in inits {
-		// println!("{}", line);
-		let tokens = &mut line.split(' ');
-		let first = tokens.next().unwrap();
-		tokens.next();
-		let second = tokens.next().unwrap();
-
-		match first.parse::<u16>() {
-			Ok(number) => {
-				wires.insert(second, number);
-			},
-			Err(_) => {
-				match wires.get(first) {
-					Some(number) => {
-						wires.insert(second, *number);
-					},
-					None => {
-						wires.insert(first, 0);
-						wires.insert(second, 0);
-					},
-				};
-			},
-		};
-	}
-
-	for (k, v) in wires.iter() {
-		println!("{} {}", k, v);
-	}
-
-	for line in ops {
-		println!("{}", line);
-		let tokens = &mut line.split(' ');
-		let op1 = tokens.next().unwrap();
-		let operation = tokens.next().unwrap();
-		let op2 = tokens.next().unwrap();
-		let not_wire = tokens.next().unwrap();
-		let mut number = match operation {
-			"AND"    => wires.get(op1).unwrap() & wires.get(op2).unwrap(),
-			"OR"     => wires.get(op1).unwrap() | wires.get(op2).unwrap(),
-			"LSHIFT" => wires.get(op1).unwrap() << op2.parse::<u16>().unwrap(),
-			"RSHIFT" => wires.get(op1).unwrap() >> op2.parse::<u16>().unwrap(),
-			_ => 0,
-		};
-		if op1 == "NOT" {
-			number = !wires.get(operation).unwrap();
-			wires.insert(not_wire, number);
-		} else {
-			wires.insert(tokens.next().unwrap(), number);
-		}
-	}
-
-	// println!("Part1: {}", wires.get("a").unwrap());
-	// println!("Part2: {}", part2);
+	println!("Part1: {}", solve(&wires, &mut values, "a".to_string()));
 }
