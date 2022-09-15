@@ -1,54 +1,36 @@
 use std::fs;
+use regex::Regex;
 
 fn main() {
-	let input = fs::read_to_string("input").unwrap();
+	let input = fs::read_to_string("input2").unwrap();
 
 	let mut part1: i32 = 0;
 	let mut part2: i32 = 0;
 
+	let patterns = vec![
+		Regex::new(r"[^\\]\\\\").unwrap(),
+		Regex::new(r#"\\""#).unwrap(),
+		Regex::new(r"[^\\]\\x[[:xdigit:]]{2}").unwrap(),
+		Regex::new(r"[^\\]\\x[[:xdigit:]]{2}").unwrap(),
+		Regex::new(r"[^\\]\\x[[:xdigit:]]{2}").unwrap(),
+	];
+
 	for line in input.lines() {
-
-		println!("{}", line);
-
 		let code = line.len();
-		let mut chars = 0;
 
-		let string: Vec<char> = line[1..line.len()-1].chars().collect::<Vec<char>>();
-		let len = string.len();
-		println!("{}", string.iter().collect::<String>());
-
-		let mut i = 0;
-		loop {
-			if i == len {
-				break;
-			}
-
-			println!("Char: {} {}", i, string[i]);
-
-			match string[i] {
-				'\\' => {
-					if i != len - 1 {
-						match string[i+1] {
-							'\\' => chars += 1,
-							'"' => (),
-							'x' => chars -= 2,
-							_ => (),
-						}
-					}
-				},
-				_ => chars += 1,
-			};
-
-			i += 1;
-
-			println!("{} {}", code, chars);
-
+		// FIRST PART
+		let mut chars = code - 2; // quotation marks at beginning and end
+		for pat in &patterns {
+			chars -= pat.find_iter(line).count();
 		}
 
-		// println!("FINAL: {} {}", code, chars);
+		// println!("{} {},{}", line, code, chars);
 
 		part1 += code as i32;
 		part1 -= chars as i32;
+
+		// SECOND PART
+		todo!()
 	}
 
 	println!("Part1: {}", part1);
