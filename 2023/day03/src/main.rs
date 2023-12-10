@@ -9,9 +9,14 @@ fn main() {
     let mut numbers = HashMap::new();
     input.lines().enumerate().for_each(|(i, line)| {
         re_numbers.find_iter(line).for_each(|capture| {
-            for j in capture.start()..capture.end() {
-                numbers.insert((i, j), capture.as_str().parse::<i32>().unwrap());
+            let mut possible_positions = vec![];
+            for ele in capture.start()..capture.end() {
+                possible_positions.push((i, ele));
             }
+            numbers.insert(
+                possible_positions,
+                (capture.as_str().parse::<i32>().unwrap(), false),
+            );
         });
     });
 
@@ -28,15 +33,19 @@ fn main() {
                 (i + 1, capture.start()),
                 (i + 1, capture.start() + 1),
             ];
-            let mut found_numbers = vec![];
             for (i, j) in possible_positions {
-                if let Some(number) = numbers.get(&(i, j)) {
-                    if !found_numbers.contains(number) {
-                        println!("{} {} {}", i, j, number);
-                        part1 += *number as u64;
-                        found_numbers.push(*number);
-                    }
-                }
+                numbers
+                    .iter_mut()
+                    .filter(|(key, _)| {
+                        return key.contains(&(i, j));
+                    })
+                    .for_each(|(_, val)| {
+                        println!("{:?}", val);
+                        if !val.1 {
+                            val.1 = true;
+                            part1 += val.0 as u64;
+                        }
+                    });
             }
         });
     });
