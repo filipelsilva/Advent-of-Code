@@ -3,7 +3,7 @@ use std::fs;
 fn main() {
     let input = fs::read_to_string("input").unwrap();
 
-    let mut seeds: Vec<Vec<u64>> = Vec::new();
+    let mut seeds: Vec<u64> = Vec::new();
     let mut seed_to_soil: Vec<(u64, u64, u64)> = Vec::new();
     let mut soil_to_fertilizer: Vec<(u64, u64, u64)> = Vec::new();
     let mut fertilizer_to_water: Vec<(u64, u64, u64)> = Vec::new();
@@ -19,7 +19,7 @@ fn main() {
                 .last()
                 .unwrap()
                 .split(" ")
-                .map(|num| vec![num.parse::<u64>().unwrap()])
+                .map(|num| num.parse::<u64>().unwrap())
                 .collect();
             return;
         }
@@ -46,16 +46,32 @@ fn main() {
         });
     });
 
-    println!("{:?}", seeds);
-    println!("{:?}", seed_to_soil);
-    println!("{:?}", soil_to_fertilizer);
-    println!("{:?}", fertilizer_to_water);
-    println!("{:?}", water_to_light);
-    println!("{:?}", light_to_temperature);
-    println!("{:?}", temperature_to_humidity);
-    println!("{:?}", humidity_to_location);
+    let mut all_seeds: Vec<Vec<u64>> = Vec::new();
 
-    for seed in &mut seeds {
+    for i in (1..seeds.len()).step_by(2) {
+        all_seeds.push(vec![seeds[i]]);
+    }
+
+    for i in (0..seeds.len()).step_by(2) {
+        let start = seeds[i];
+        let range = seeds[i + 1];
+        for ii in start..(start + range) {
+            all_seeds.push(vec![ii]);
+        }
+    }
+
+    println!("{:?}", all_seeds);
+
+    // println!("{:?}", seeds);
+    // println!("{:?}", seed_to_soil);
+    // println!("{:?}", soil_to_fertilizer);
+    // println!("{:?}", fertilizer_to_water);
+    // println!("{:?}", water_to_light);
+    // println!("{:?}", light_to_temperature);
+    // println!("{:?}", temperature_to_humidity);
+    // println!("{:?}", humidity_to_location);
+
+    for seed in &mut all_seeds {
         let mut flag = false;
         let num = seed.last().unwrap().clone();
         for (src, range, dest) in &seed_to_soil {
@@ -70,7 +86,7 @@ fn main() {
         }
     }
 
-    for seed in &mut seeds {
+    for seed in &mut all_seeds {
         let mut flag = false;
         let num = seed.last().unwrap().clone();
         for (src, range, dest) in &soil_to_fertilizer {
@@ -85,7 +101,7 @@ fn main() {
         }
     }
 
-    for seed in &mut seeds {
+    for seed in &mut all_seeds {
         let mut flag = false;
         let num = seed.last().unwrap().clone();
         for (src, range, dest) in &fertilizer_to_water {
@@ -100,7 +116,7 @@ fn main() {
         }
     }
 
-    for seed in &mut seeds {
+    for seed in &mut all_seeds {
         let mut flag = false;
         let num = seed.last().unwrap().clone();
         for (src, range, dest) in &water_to_light {
@@ -115,7 +131,7 @@ fn main() {
         }
     }
 
-    for seed in &mut seeds {
+    for seed in &mut all_seeds {
         let mut flag = false;
         let num = seed.last().unwrap().clone();
         for (src, range, dest) in &light_to_temperature {
@@ -130,7 +146,7 @@ fn main() {
         }
     }
 
-    for seed in &mut seeds {
+    for seed in &mut all_seeds {
         let mut flag = false;
         let num = seed.last().unwrap().clone();
         for (src, range, dest) in &temperature_to_humidity {
@@ -145,7 +161,7 @@ fn main() {
         }
     }
 
-    for seed in &mut seeds {
+    for seed in &mut all_seeds {
         let mut flag = false;
         let num = seed.last().unwrap().clone();
         for (src, range, dest) in &humidity_to_location {
@@ -160,11 +176,25 @@ fn main() {
         }
     }
 
-    println!("{:?}", seeds);
+    // println!("{:?}", seeds);
+    // println!("{:?}", all_seeds);
 
     println!(
         "Part 1: {:?}",
-        seeds.iter().map(|seed| seed.last().unwrap()).min().unwrap()
+        all_seeds
+            .iter()
+            .filter(|seed| seeds.contains(seed.first().unwrap()))
+            .map(|seed| seed.last().unwrap())
+            .min()
+            .unwrap()
+    );
+    println!(
+        "Part 2: {:?}",
+        all_seeds[seeds.len() / 2..]
+            .iter()
+            .map(|seed| seed.last().unwrap())
+            .min()
+            .unwrap()
     );
     // println!("Part 2: {:?}", part2);
 }
