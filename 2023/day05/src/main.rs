@@ -46,155 +46,127 @@ fn main() {
         });
     });
 
-    let mut all_seeds: Vec<Vec<u64>> = Vec::new();
+    let mut part1: u64 = u64::MAX;
 
-    for i in (1..seeds.len()).step_by(2) {
-        all_seeds.push(vec![seeds[i]]);
+    for mut seed in seeds.clone() {
+        for (src, range, dest) in &seed_to_soil {
+            if (src..&(src + range)).contains(&&seed) {
+                seed += dest;
+                seed -= src;
+                break;
+            }
+        }
+        for (src, range, dest) in &soil_to_fertilizer {
+            if (src..&(src + range)).contains(&&seed) {
+                seed += dest;
+                seed -= src;
+                break;
+            }
+        }
+        for (src, range, dest) in &fertilizer_to_water {
+            if (src..&(src + range)).contains(&&seed) {
+                seed += dest;
+                seed -= src;
+                break;
+            }
+        }
+        for (src, range, dest) in &water_to_light {
+            if (src..&(src + range)).contains(&&seed) {
+                seed += dest;
+                seed -= src;
+                break;
+            }
+        }
+        for (src, range, dest) in &light_to_temperature {
+            if (src..&(src + range)).contains(&&seed) {
+                seed += dest;
+                seed -= src;
+                break;
+            }
+        }
+        for (src, range, dest) in &temperature_to_humidity {
+            if (src..&(src + range)).contains(&&seed) {
+                seed += dest;
+                seed -= src;
+                break;
+            }
+        }
+        for (src, range, dest) in &humidity_to_location {
+            if (src..&(src + range)).contains(&&seed) {
+                seed += dest;
+                seed -= src;
+                break;
+            }
+        }
+
+        if seed < part1 {
+            part1 = seed;
+        }
     }
+
+    println!("Part 1: {:?}", part1);
+
+    let mut part2: u64 = u64::MAX;
 
     for i in (0..seeds.len()).step_by(2) {
         let start = seeds[i];
         let range = seeds[i + 1];
-        for ii in start..(start + range) {
-            all_seeds.push(vec![ii]);
-        }
-    }
+        for mut seed in start..(start + range) {
+            for (src, range, dest) in &seed_to_soil {
+                if (src..&(src + range)).contains(&&seed) {
+                    seed += dest;
+                    seed -= src;
+                    break;
+                }
+            }
+            for (src, range, dest) in &soil_to_fertilizer {
+                if (src..&(src + range)).contains(&&seed) {
+                    seed += dest;
+                    seed -= src;
+                    break;
+                }
+            }
+            for (src, range, dest) in &fertilizer_to_water {
+                if (src..&(src + range)).contains(&&seed) {
+                    seed += dest;
+                    seed -= src;
+                    break;
+                }
+            }
+            for (src, range, dest) in &water_to_light {
+                if (src..&(src + range)).contains(&&seed) {
+                    seed += dest;
+                    seed -= src;
+                    break;
+                }
+            }
+            for (src, range, dest) in &light_to_temperature {
+                if (src..&(src + range)).contains(&&seed) {
+                    seed += dest;
+                    seed -= src;
+                    break;
+                }
+            }
+            for (src, range, dest) in &temperature_to_humidity {
+                if (src..&(src + range)).contains(&&seed) {
+                    seed += dest;
+                    seed -= src;
+                    break;
+                }
+            }
+            for (src, range, dest) in &humidity_to_location {
+                if (src..&(src + range)).contains(&&seed) {
+                    seed += dest;
+                    seed -= src;
+                    break;
+                }
+            }
 
-    println!("{:?}", all_seeds);
-
-    // println!("{:?}", seeds);
-    // println!("{:?}", seed_to_soil);
-    // println!("{:?}", soil_to_fertilizer);
-    // println!("{:?}", fertilizer_to_water);
-    // println!("{:?}", water_to_light);
-    // println!("{:?}", light_to_temperature);
-    // println!("{:?}", temperature_to_humidity);
-    // println!("{:?}", humidity_to_location);
-
-    for seed in &mut all_seeds {
-        let mut flag = false;
-        let num = seed.last().unwrap().clone();
-        for (src, range, dest) in &seed_to_soil {
-            if (src..&(src + range)).contains(&&num) {
-                seed.push(dest + num - src);
-                flag = true;
-                break;
+            if seed < part2 {
+                part2 = seed;
             }
         }
-        if !flag {
-            seed.push(num);
-        }
     }
 
-    for seed in &mut all_seeds {
-        let mut flag = false;
-        let num = seed.last().unwrap().clone();
-        for (src, range, dest) in &soil_to_fertilizer {
-            if (src..&(src + range)).contains(&&num) {
-                seed.push(dest + num - src);
-                flag = true;
-                break;
-            }
-        }
-        if !flag {
-            seed.push(num);
-        }
-    }
-
-    for seed in &mut all_seeds {
-        let mut flag = false;
-        let num = seed.last().unwrap().clone();
-        for (src, range, dest) in &fertilizer_to_water {
-            if (src..&(src + range)).contains(&&num) {
-                seed.push(dest + num - src);
-                flag = true;
-                break;
-            }
-        }
-        if !flag {
-            seed.push(num);
-        }
-    }
-
-    for seed in &mut all_seeds {
-        let mut flag = false;
-        let num = seed.last().unwrap().clone();
-        for (src, range, dest) in &water_to_light {
-            if (src..&(src + range)).contains(&&num) {
-                seed.push(dest + num - src);
-                flag = true;
-                break;
-            }
-        }
-        if !flag {
-            seed.push(num);
-        }
-    }
-
-    for seed in &mut all_seeds {
-        let mut flag = false;
-        let num = seed.last().unwrap().clone();
-        for (src, range, dest) in &light_to_temperature {
-            if (src..&(src + range)).contains(&&num) {
-                seed.push(dest + num - src);
-                flag = true;
-                break;
-            }
-        }
-        if !flag {
-            seed.push(num);
-        }
-    }
-
-    for seed in &mut all_seeds {
-        let mut flag = false;
-        let num = seed.last().unwrap().clone();
-        for (src, range, dest) in &temperature_to_humidity {
-            if (src..&(src + range)).contains(&&num) {
-                seed.push(dest + num - src);
-                flag = true;
-                break;
-            }
-        }
-        if !flag {
-            seed.push(num);
-        }
-    }
-
-    for seed in &mut all_seeds {
-        let mut flag = false;
-        let num = seed.last().unwrap().clone();
-        for (src, range, dest) in &humidity_to_location {
-            if (src..&(src + range)).contains(&&num) {
-                seed.push(dest + num - src);
-                flag = true;
-                break;
-            }
-        }
-        if !flag {
-            seed.push(num);
-        }
-    }
-
-    // println!("{:?}", seeds);
-    // println!("{:?}", all_seeds);
-
-    println!(
-        "Part 1: {:?}",
-        all_seeds
-            .iter()
-            .filter(|seed| seeds.contains(seed.first().unwrap()))
-            .map(|seed| seed.last().unwrap())
-            .min()
-            .unwrap()
-    );
-    println!(
-        "Part 2: {:?}",
-        all_seeds[seeds.len() / 2..]
-            .iter()
-            .map(|seed| seed.last().unwrap())
-            .min()
-            .unwrap()
-    );
-    // println!("Part 2: {:?}", part2);
+    println!("Part 2: {:?}", part2);
 }
