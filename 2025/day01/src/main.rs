@@ -1,7 +1,7 @@
 use std::fs;
 
 fn main() {
-    let input = fs::read_to_string("input4").unwrap();
+    let input = fs::read_to_string("input2").unwrap();
 
     let mut pointer = 50;
 
@@ -10,10 +10,9 @@ fn main() {
 
     input.lines().for_each(|line| {
         let (direction, distance) = line.split_at(1);
-        let mut number_distance = distance.parse::<i32>().unwrap();
+        let number_distance = distance.parse::<i32>().unwrap();
 
         zero_counter_pt2 += number_distance / 100;
-        number_distance %= 100;
 
         let new_pointer = (pointer
             + match direction {
@@ -23,11 +22,20 @@ fn main() {
             })
             % 100;
 
+        if pointer < 0 && new_pointer >= 0 {
+            zero_counter_pt2 += 1;
+        } else if pointer > 0 && new_pointer <= 0 {
+            zero_counter_pt2 += 1;
+        } else if new_pointer == 0 {
+            zero_counter_pt2 += 1;
+        }
+
         if new_pointer == 0 {
             zero_counter += 1;
         }
 
-        println!("{line} ({new_pointer}): {zero_counter} | {zero_counter_pt2}");
+        println!("{pointer} -> {new_pointer} | {line} | {zero_counter} | {zero_counter_pt2}");
+
         pointer = new_pointer.rem_euclid(100);
     });
 
