@@ -1,7 +1,7 @@
 use std::fs;
 
 fn main() {
-    let input = fs::read_to_string("input2").unwrap();
+    let input = fs::read_to_string("input4").unwrap();
 
     let mut pointer = 50;
 
@@ -10,32 +10,25 @@ fn main() {
 
     input.lines().for_each(|line| {
         let (direction, distance) = line.split_at(1);
-        let number_distance = distance.parse::<i32>().unwrap();
+        let mut number_distance = distance.parse::<i32>().unwrap();
 
-        match direction {
-            "R" => pointer += number_distance,
-            "L" => pointer -= number_distance,
-            _ => panic!("should catch R or L"),
-        }
+        zero_counter_pt2 += number_distance / 100;
+        number_distance %= 100;
 
-        match pointer {
-            ..0 => {
-                if pointer.abs() != number_distance {
-                    zero_counter_pt2 += (pointer.abs() / 100) + 1;
-                }
-            }
-            101.. => zero_counter_pt2 += pointer / 100,
-            _ => (),
-        }
+        let new_pointer = (pointer
+            + match direction {
+                "R" => number_distance,
+                "L" => -number_distance,
+                _ => panic!("should catch R or L"),
+            })
+            % 100;
 
-        pointer = pointer.rem_euclid(100);
-
-        if pointer == 0 {
+        if new_pointer == 0 {
             zero_counter += 1;
-            zero_counter_pt2 += 1;
         }
 
-        println!("{line} ({pointer}): {zero_counter} | {zero_counter_pt2}");
+        println!("{line} ({new_pointer}): {zero_counter} | {zero_counter_pt2}");
+        pointer = new_pointer.rem_euclid(100);
     });
 
     println!("Part1: {zero_counter}");
