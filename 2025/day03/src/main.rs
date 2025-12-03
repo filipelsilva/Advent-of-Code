@@ -11,34 +11,62 @@ fn main() {
     for bank in banks {
         let splits = bank.char_indices().collect::<Vec<_>>();
 
-        let mut max1: (usize, char) = (0, '0');
-        for split in &splits {
-            if split.0 == splits.len() - 1 {
-                continue;
+        let mut vec_nums: Vec<(usize, char)> = vec![];
+
+        for i in (0..=1).rev() {
+            let mut max: (usize, char) = (0, '0');
+
+            for split in &splits {
+                if !vec_nums.is_empty() && split.0 <= vec_nums.last().unwrap().0 {
+                    continue;
+                }
+
+                if split.0 >= splits.len() - i {
+                    continue;
+                }
+
+                if split.1 > max.1 {
+                    max = *split;
+                }
             }
 
-            if split.1 > max1.1 {
-                max1 = *split;
-            }
+            vec_nums.push(max);
         }
 
-        let mut max2: (usize, char) = (0, '0');
-        for split in splits {
-            if split.0 <= max1.0 {
-                continue;
-            }
-
-            if split.1 > max2.1 {
-                max2 = split;
-            }
-        }
-
-        let number_str = format!("{}{}", max1.1, max2.1);
+        let number_str = vec_nums.iter().map(|el| el.1).collect::<String>();
         let number = number_str.parse::<usize>().unwrap();
 
+        println!("PT1 FOUND: {number}");
         counter_pt1 += number;
 
-        println!("FOUND: {number} ({max1:#?} - {max2:#?})");
+        // Part 2
+        vec_nums.clear();
+
+        for i in (0..=11).rev() {
+            let mut max: (usize, char) = (0, '0');
+
+            for split in &splits {
+                if !vec_nums.is_empty() && split.0 <= vec_nums.last().unwrap().0 {
+                    continue;
+                }
+
+                if split.0 >= splits.len() - i {
+                    continue;
+                }
+
+                if split.1 > max.1 {
+                    max = *split;
+                }
+            }
+
+            vec_nums.push(max);
+        }
+
+        let number_str = vec_nums.iter().map(|el| el.1).collect::<String>();
+        let number = number_str.parse::<usize>().unwrap();
+
+        println!("PT2 FOUND: {number}");
+        counter_pt2 += number;
     }
 
     println!("Part1: {counter_pt1}");
