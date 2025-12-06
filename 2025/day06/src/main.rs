@@ -15,15 +15,9 @@ fn main() {
 
     for i in 0..lines[0].len() {
         let op = lines[op_index][i];
-        let operands = lines
+        let operands = lines[..op_index]
             .iter()
-            .enumerate()
-            .map(|(index, line)| {
-                if index != op_index {
-                    return line[i].parse::<u64>().unwrap();
-                }
-                return 0;
-            })
+            .map(|line| line[i].parse::<u64>().unwrap())
             .filter(|el| *el != 0)
             .collect::<Vec<_>>();
 
@@ -34,6 +28,45 @@ fn main() {
         };
 
         counter_pt1 += result;
+    }
+
+    let lines_pt2 = input
+        .lines()
+        .map(|line| line.chars().collect::<Vec<_>>())
+        .collect::<Vec<_>>();
+
+    let mut numbers_vec = Vec::new();
+    for i in (0..lines_pt2[0].len()).rev() {
+        let op = lines_pt2[op_index][i];
+        let operand = lines_pt2[..op_index]
+            .iter()
+            .map(|line| line[i])
+            .filter(|chr| *chr != ' ')
+            .collect::<String>();
+
+        if !operand.is_empty() {
+            numbers_vec.push(operand.parse::<u64>().unwrap());
+        };
+
+        match op {
+            '+' => {
+                counter_pt2 += numbers_vec
+                    .iter()
+                    .copied()
+                    .reduce(|acc, el| acc + el)
+                    .unwrap();
+                numbers_vec.clear();
+            }
+            '*' => {
+                counter_pt2 += numbers_vec
+                    .iter()
+                    .copied()
+                    .reduce(|acc, el| acc * el)
+                    .unwrap();
+                numbers_vec.clear();
+            }
+            _ => (),
+        }
     }
 
     println!("Part1: {counter_pt1}");
