@@ -1,7 +1,7 @@
 use std::fs;
 
 fn main() {
-    let input = fs::read_to_string("input2").unwrap();
+    let input = fs::read_to_string("input").unwrap();
 
     let lines = input
         .lines()
@@ -20,18 +20,20 @@ fn main() {
             .enumerate()
             .map(|(index, line)| {
                 if index != op_index {
-                    return line[i].parse::<i32>().unwrap();
+                    return line[i].parse::<u64>().unwrap();
                 }
-                return -2;
+                return 0;
             })
-            .filter(|el| *el >= 0)
+            .filter(|el| *el != 0)
             .collect::<Vec<_>>();
 
-        let result: i32 = match op {
-            "+" => *operands.iter().reduce(|acc, el| &(acc + el)).unwrap(),
-            "*" => *operands.iter().reduce(|acc, el| &(acc * el)).unwrap(),
+        let result: u64 = match op {
+            "+" => operands.iter().copied().reduce(|acc, el| acc + el).unwrap(),
+            "*" => operands.iter().copied().reduce(|acc, el| acc * el).unwrap(),
             _ => 0,
-        }
+        };
+
+        counter_pt1 += result;
     }
 
     println!("Part1: {counter_pt1}");
