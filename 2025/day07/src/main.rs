@@ -89,6 +89,9 @@ fn count_possibilities(
         match lines[i][x] {
             '|' => i += 1,
             '^' => {
+                if cache.contains_key(&(i, x)) {
+                    return *cache.get(&(i, x)).unwrap();
+                }
                 let val = count_possibilities(lines, cache, i + 1, x - 1)
                     + count_possibilities(lines, cache, i + 1, x + 1);
                 cache.insert((i, x), val);
