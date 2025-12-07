@@ -1,7 +1,7 @@
-use std::fs;
+use std::{collections::HashMap, fs};
 
 fn main() {
-    let input = fs::read_to_string("input").unwrap();
+    let input = fs::read_to_string("input2").unwrap();
 
     let mut lines = input
         .lines()
@@ -9,7 +9,6 @@ fn main() {
         .collect::<Vec<_>>();
 
     let mut counter_pt1 = 0;
-    let mut counter_pt2 = 0;
 
     for y in 1..lines.len() {
         for x in 0..lines[0].len() {
@@ -46,6 +45,50 @@ fn main() {
         }
     }
 
+    let mut cache: HashMap<(usize, usize), u64> = HashMap::new();
+
+    let counter_pt2 = count_possibilities(
+        &lines,
+        &mut cache,
+        1,
+        lines[0].iter().position(|el| *el == 'S').unwrap(),
+    );
+
     println!("Part1: {counter_pt1}");
     println!("Part2: {counter_pt2}");
+}
+
+fn count_possibilities(
+    lines: &Vec<Vec<char>>,
+    cache: &mut HashMap<(usize, usize), u64>,
+    y: usize,
+    x: usize,
+) -> u64 {
+    assert!(lines[y][x] == '|');
+    println!("({y}, {x})");
+
+    if cache.contains_key(&(y, x)) {
+        return *cache.get(&(y, x)).unwrap();
+    }
+
+    let mut i = y;
+    loop {
+        if i == lines.len() - 1 {
+            break;
+        }
+
+        match lines[i][x] {
+            '|' => i += 1,
+            '^' => {
+                let val = count_possibilities(lines, cache, i + 1, x - 1)
+                    + count_possibilities(lines, cache, i + 1, x + 1);
+                cache.insert((i, x), val);
+                return val;
+            }
+            _ => (),
+        }
+    }
+
+    cache.insert((i, x), 1);
+    return 1;
 }
