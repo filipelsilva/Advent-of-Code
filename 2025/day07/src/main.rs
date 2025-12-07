@@ -35,13 +35,10 @@ fn main() {
         println!("{}", lines[y].iter().collect::<String>());
     }
 
-    let mut splitter_positions: Vec<(usize, usize)> = Vec::new();
-
     for y in 0..lines.len() {
         for x in 0..lines[0].len() {
             if lines[y][x] == '^' {
                 if lines[y - 1][x] == '|' {
-                    splitter_positions.push((y - 1, x));
                     counter_pt1 += 1;
                 }
             }
@@ -49,12 +46,6 @@ fn main() {
     }
 
     let mut cache: HashMap<(usize, usize), u64> = HashMap::new();
-
-    for (y, x) in splitter_positions.iter().rev() {
-        println!("FOR {y},{x} =====");
-        println!("{cache:#?}");
-        _ = count_possibilities(&lines, &mut cache, *y, *x);
-    }
 
     let counter_pt2 = count_possibilities(
         &lines,
@@ -74,7 +65,6 @@ fn count_possibilities(
     x: usize,
 ) -> u64 {
     assert!(lines[y][x] == '|');
-    // println!("({y}, {x})");
 
     if cache.contains_key(&(y, x)) {
         return *cache.get(&(y, x)).unwrap();
