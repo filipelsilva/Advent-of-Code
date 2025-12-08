@@ -1,0 +1,95 @@
+use std::fs;
+
+fn distance(x1: i64, y1: i64, z1: i64, x2: i64, y2: i64, z2: i64) -> u64 {
+    let x_delta = x1 - x2;
+    let y_delta = y1 - y2;
+    let z_delta = z1 - z2;
+    let squared_delta: u64 = (x_delta.pow(2) + y_delta.pow(2) + z_delta.pow(2))
+        .try_into()
+        .unwrap();
+
+    squared_delta.isqrt()
+}
+
+fn main() {
+    let input = fs::read_to_string("input2").unwrap();
+
+    let positions = input
+        .lines()
+        .map(|line| {
+            line.trim()
+                .split(',')
+                .map(|el| el.parse::<i64>().unwrap())
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+
+    let mut distances: Vec<((usize, usize), u64)> = Vec::new();
+    for i in 0..positions.len() - 1 {
+        for j in i + 1..positions.len() {
+            let dist = distance(
+                positions[i][0],
+                positions[i][1],
+                positions[i][2],
+                positions[j][0],
+                positions[j][1],
+                positions[j][2],
+            );
+            distances.push(((i, j), dist));
+        }
+    }
+
+    distances.sort_by(|a, b| a.1.cmp(&b.1));
+
+    let mut buckets: Vec<Vec<usize>> = Vec::new();
+
+    let mut counter = 0;
+    let mut i = 0;
+    loop {
+        let points = distances[i].0;
+        let mut should_add = true;
+
+        // let buckets_to_add =
+        for bucket in &mut buckets {
+            if bucket.contains(&points.0) {
+                if !bucket.contains(&points.1) {
+                    bucket.push(points.1);
+                }
+                counter += 1;
+                should_add = false;
+                break;
+            } else if bucket.contains(&points.1) {
+                if !bucket.contains(&points.0) {
+                    bucket.push(points.0);
+                }
+                counter += 1;
+                should_add = false;
+                break;
+            }
+        }
+
+        i += 1;
+
+        if should_add {
+            let mut new_bucket = Vec::new();
+            new_bucket.push(points.0);
+            new_bucket.push(points.1);
+            buckets.push(new_bucket);
+            counter += 2;
+        }
+
+        if counter == positions.len() {
+            break;
+        }
+    }
+
+    buckets.sort_by(|a, b| b.len().cmp(&a.len()));
+
+    println!("{buckets:#?}");
+
+    let counter_pt1 = (buckets[0].len() * buckets[1].len() * buckets[2].len()) as u64;
+    let mut counter_pt2 = 0;
+
+    println!("Part1: {counter_pt1}");
+    println!("Part2: {counter_pt2}");
+}
