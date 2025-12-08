@@ -12,7 +12,8 @@ fn distance(x1: i64, y1: i64, z1: i64, x2: i64, y2: i64, z2: i64) -> u64 {
 }
 
 fn main() {
-    let input = fs::read_to_string("input2").unwrap();
+    let path = "input2";
+    let input = fs::read_to_string(path).unwrap();
 
     let positions = input
         .lines()
@@ -43,44 +44,46 @@ fn main() {
 
     let mut buckets: Vec<Vec<usize>> = Vec::new();
 
-    let mut counter = 0;
-    let mut i = 0;
-    loop {
-        let points = distances[i].0;
-        let mut should_add = true;
+    let range = match path {
+        "input" => 1000,
+        _ => 10,
+    };
 
-        // let buckets_to_add =
-        for bucket in &mut buckets {
-            if bucket.contains(&points.0) {
-                if !bucket.contains(&points.1) {
-                    bucket.push(points.1);
+    for i in 0..range {
+        let points = distances[i].0;
+
+        let buckets_to_add = buckets
+            .iter()
+            .filter(|bucket| bucket.contains(&points.0) || bucket.contains(&points.1))
+            .map(|bucket| bucket.iter().copied().collect::<Vec<_>>())
+            .collect::<Vec<_>>();
+
+        buckets = buckets
+            .iter()
+            .filter(|bucket| !bucket.contains(&points.0) && !bucket.contains(&points.1))
+            .map(|bucket| bucket.iter().copied().collect::<Vec<_>>())
+            .collect::<Vec<_>>();
+
+        let mut new_bucket = vec![points.0, points.1];
+
+        if buckets_to_add.len() != 0 {
+            for bucket in buckets_to_add {
+                for point in bucket {
+                    if !new_bucket.contains(&point) {
+                        new_bucket.push(point);
+                    }
                 }
-                counter += 1;
-                should_add = false;
-                break;
-            } else if bucket.contains(&points.1) {
-                if !bucket.contains(&points.0) {
-                    bucket.push(points.0);
-                }
-                counter += 1;
-                should_add = false;
-                break;
             }
         }
 
-        i += 1;
+        buckets.push(new_bucket);
 
-        if should_add {
-            let mut new_bucket = Vec::new();
-            new_bucket.push(points.0);
-            new_bucket.push(points.1);
-            buckets.push(new_bucket);
-            counter += 2;
-        }
-
-        if counter == positions.len() {
-            break;
-        }
+        // let counter = buckets
+        //     .iter()
+        //     .fold(0, |acc, el| acc + el.iter().fold(0, |acc, el| acc + el));
+        // if counter == positions.len() {
+        //     break;
+        // }
     }
 
     buckets.sort_by(|a, b| b.len().cmp(&a.len()));
