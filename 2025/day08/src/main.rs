@@ -12,7 +12,7 @@ fn distance(x1: i64, y1: i64, z1: i64, x2: i64, y2: i64, z2: i64) -> u64 {
 }
 
 fn main() {
-    let path = "input2";
+    let path = "input";
     let input = fs::read_to_string(path).unwrap();
 
     let positions = input
@@ -49,8 +49,12 @@ fn main() {
         _ => 10,
     };
 
-    for i in 0..range {
-        let points = distances[i].0;
+    let mut counter_pt1 = 0;
+
+    let mut i = 0;
+    let mut points;
+    loop {
+        points = distances[i].0;
 
         let buckets_to_add = buckets
             .iter()
@@ -78,20 +82,21 @@ fn main() {
 
         buckets.push(new_bucket);
 
-        // let counter = buckets
-        //     .iter()
-        //     .fold(0, |acc, el| acc + el.iter().fold(0, |acc, el| acc + el));
-        // if counter == positions.len() {
-        //     break;
-        // }
+        if i == range - 1 {
+            buckets.sort_by(|a, b| b.len().cmp(&a.len()));
+            counter_pt1 = (buckets[0].len() * buckets[1].len() * buckets[2].len()) as u64;
+        }
+
+        if buckets.len() == 1 && buckets[0].len() == positions.len() {
+            break;
+        }
+
+        i += 1;
     }
 
-    buckets.sort_by(|a, b| b.len().cmp(&a.len()));
+    // println!("{buckets:#?}");
 
-    println!("{buckets:#?}");
-
-    let counter_pt1 = (buckets[0].len() * buckets[1].len() * buckets[2].len()) as u64;
-    let mut counter_pt2 = 0;
+    let counter_pt2 = positions[points.0][0] * positions[points.1][0];
 
     println!("Part1: {counter_pt1}");
     println!("Part2: {counter_pt2}");
