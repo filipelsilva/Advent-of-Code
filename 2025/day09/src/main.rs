@@ -7,7 +7,7 @@ fn area(x1: i64, y1: i64, x2: i64, y2: i64) -> u64 {
 }
 
 fn main() {
-    let input = fs::read_to_string("input2").unwrap();
+    let input = fs::read_to_string("input").unwrap();
 
     let positions = input
         .lines()
@@ -118,22 +118,20 @@ fn main() {
             //     continue;
             // }
 
-            let new_area = area(x1 as i64, y1 as i64, x2 as i64, y2 as i64);
+            let orig_y1 = y_pos_map.get(&y1).unwrap();
+            let orig_y2 = y_pos_map.get(&y2).unwrap();
+            let orig_x1 = x_pos_map.get(&x1).unwrap();
+            let orig_x2 = x_pos_map.get(&x2).unwrap();
+            let new_area = area(**orig_x1, **orig_y1, **orig_x2, **orig_y2);
+
+            // println!("({x1}, {y1}) ({x2}, {y2}) - {new_area}");
+
             if new_area > counter_pt2 {
                 counter_pt2 = new_area;
                 best_pos = ((y1, x1), (y2, x2))
             }
         }
     }
-
-    let y1 = y_pos_map.get(&best_pos.0.0).unwrap();
-    let y2 = y_pos_map.get(&best_pos.1.0).unwrap();
-    let x1 = x_pos_map.get(&best_pos.0.1).unwrap();
-    let x2 = x_pos_map.get(&best_pos.1.1).unwrap();
-
-    println!("({x1}, {y1}) ({x2}, {y2})");
-
-    counter_pt2 = area(**x1, **y1, **x2, **y2);
 
     println!("Part1: {counter_pt1}");
     println!("Part2: {counter_pt2}");
