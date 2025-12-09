@@ -23,50 +23,32 @@ fn main() {
     let mut counter_pt1: u64 = 0;
     let mut counter_pt2: u64 = 0;
 
-    let mut board: Vec<Vec<char>> = Vec::new();
+    let mut board_edges: Vec<HashSet<(i64, i64)>> = Vec::new();
 
-    let mut max_x = 0;
-    let mut max_y = 0;
     for i in 1..positions.len() - 1 {
         let x1 = positions[i - 1][0];
         let y1 = positions[i - 1][1];
         let x2 = positions[i][0];
         let y2 = positions[i][1];
+
+        assert!((x1 == x2) ^ (y1 == y2));
+
+        let edge: HashSet<(i64, i64)>;
         if x1 == x2 {
-            for y in y1..=y2 {
-                valid_positions.insert((y, x1));
+            if y1 > y2 {
+                edge = (y2..=y1).map(|y| (y, x1)).collect::<HashSet<_>>();
+            } else {
+                edge = (y1..=y2).map(|y| (y, x1)).collect::<HashSet<_>>();
             }
-        } else if y1 == y2 {
-            for x in x1..=x2 {
-                valid_positions.insert((y1, x));
+        } else {
+            if x1 > x2 {
+                edge = (x2..=x1).map(|x| (y1, x)).collect::<HashSet<_>>();
+            } else {
+                edge = (x1..=x2).map(|x| (y1, x)).collect::<HashSet<_>>();
             }
         }
 
-        if x1 < min_x {
-            min_x = x1;
-        }
-        if x2 < min_x {
-            min_x = x2;
-        }
-        if y1 < min_y {
-            min_y = y1;
-        }
-        if y2 < min_y {
-            min_y = y2;
-        }
-
-        if x1 > max_x {
-            max_x = x1;
-        }
-        if x2 > max_x {
-            max_x = x2;
-        }
-        if y1 > max_y {
-            max_y = y1;
-        }
-        if y2 > max_y {
-            max_y = y2;
-        }
+        board_edges.push(edge);
     }
 
     for i in 0..positions.len() - 1 {
@@ -81,11 +63,32 @@ fn main() {
                 counter_pt1 = new_area;
             }
 
-            for y in y1..=y2 {
-                for x in x1..=x2 {
-                    valid_positions.insert((y, x));
-                }
-            }
+            // generate edges
+            let mut edges: Vec<HashSet<(i64, i64)>> = Vec::new();
+
+            // (y1,x1) ------ (y1,x2)
+            //    |              |
+            //    |              |
+            //    |              |
+            // (y2,x1) ------ (y2,x2)
+            let top_edge = (x1.min(x2)..=x1.max(x2))
+                .map(|x| (y1, x))
+                .collect::<HashSet<_>>();
+            let bottom_edge = (x1.min(x2)..=x1.max(x2))
+                .map(|x| (y2, x))
+                .collect::<HashSet<_>>();
+            let left_edge = (y1.min(y2)..=y1.max(y2))
+                .map(|y| (y, x1))
+                .collect::<HashSet<_>>();
+            let right_edge = (y1.min(y2)..=y1.max(y2))
+                .map(|y| (y, x2))
+                .collect::<HashSet<_>>();
+            edges.push(top_edge);
+            edges.push(bottom_edge);
+            edges.push(left_edge);
+            edges.push(right_edge);
+
+            // now, check edges
         }
     }
 
