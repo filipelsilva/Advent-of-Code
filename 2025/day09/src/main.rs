@@ -36,16 +36,17 @@ fn main() {
         }
     }
 
-    let mut positions_vec = positions
-        .iter()
-        .flat_map(|el| el.clone())
-        .collect::<Vec<_>>();
-    positions_vec.sort();
-    positions_vec.dedup();
+    let mut x_positions = positions.iter().map(|el| el[0]).collect::<Vec<_>>();
+    let mut y_positions = positions.iter().map(|el| el[1]).collect::<Vec<_>>();
+    x_positions.sort();
+    y_positions.sort();
+    x_positions.dedup();
+    y_positions.dedup();
 
-    let positions_map = positions_vec.iter().enumerate().collect::<HashMap<_, _>>();
+    let x_pos_map = x_positions.iter().enumerate().collect::<HashMap<_, _>>();
+    let y_pos_map = y_positions.iter().enumerate().collect::<HashMap<_, _>>();
 
-    // println!("{positions_map:#?}");
+    // println!("{x_pos_map:#?} {y_pos_map:#?}");
 
     let new_positions = positions
         .iter()
@@ -53,33 +54,26 @@ fn main() {
             let x = el[0];
             let y = el[1];
 
-            let new_x = positions_map.iter().find(|el| **el.1 == x).unwrap().0;
-            let new_y = positions_map.iter().find(|el| **el.1 == y).unwrap().0;
+            let new_x = x_pos_map.iter().find(|el| **el.1 == x).unwrap().0;
+            let new_y = y_pos_map.iter().find(|el| **el.1 == y).unwrap().0;
 
             return (*new_y, *new_x);
         })
         .collect::<Vec<_>>();
 
-    // for i in 0..new_positions.len() {
-    //     println!("{:?} {:?}", positions_vec[i], new_positions[i]);
-    // }
+    for i in 0..new_positions.len() {
+        println!("{:?} {:?}", positions[i], new_positions[i]);
+    }
 
-    let max_y = new_positions.iter().max_by_key(|el| el.0).unwrap().0;
-    let max_x = new_positions.iter().max_by_key(|el| el.1).unwrap().1;
-
-    let mut board = (0..=max_y)
-        .map(|_| (0..=max_x).map(|_| '.').collect::<Vec<_>>())
+    let mut board = (0..y_pos_map.len())
+        .map(|_| (0..x_pos_map.len()).map(|_| '.').collect::<Vec<_>>())
         .collect::<Vec<_>>();
 
-    for i in 0..new_positions.len() {
-        let mut y1 = new_positions[new_positions.len() - 1].0;
-        let mut x1 = new_positions[new_positions.len() - 1].1;
+    for i in 1..new_positions.len() {
+        let y1 = new_positions[i - 1].0;
+        let x1 = new_positions[i - 1].1;
         let y2 = new_positions[i].0;
         let x2 = new_positions[i].1;
-        if i != 0 {
-            y1 = new_positions[i - 1].0;
-            x1 = new_positions[i - 1].1;
-        }
 
         assert!((x1 == x2) ^ (y1 == y2));
 
@@ -98,9 +92,9 @@ fn main() {
         board[pos.0][pos.1] = '#';
     }
 
-    for line in &board {
-        println!("{}", line.iter().collect::<String>());
-    }
+    // for line in &board {
+    //     println!("{}", line.iter().collect::<String>());
+    // }
 
     let mut best_pos = ((0, 0), (0, 0));
     for i in 0..new_positions.len() - 1 {
@@ -132,10 +126,10 @@ fn main() {
         }
     }
 
-    let y1 = positions_map.get(&best_pos.0.0).unwrap();
-    let y2 = positions_map.get(&best_pos.1.0).unwrap();
-    let x1 = positions_map.get(&best_pos.0.1).unwrap();
-    let x2 = positions_map.get(&best_pos.1.1).unwrap();
+    let y1 = y_pos_map.get(&best_pos.0.0).unwrap();
+    let y2 = y_pos_map.get(&best_pos.1.0).unwrap();
+    let x1 = x_pos_map.get(&best_pos.0.1).unwrap();
+    let x2 = x_pos_map.get(&best_pos.1.1).unwrap();
 
     println!("({x1}, {y1}) ({x2}, {y2})");
 
