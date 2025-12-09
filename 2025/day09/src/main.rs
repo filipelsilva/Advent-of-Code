@@ -104,19 +104,19 @@ fn main() {
             let y2 = new_positions[j].0;
             let x2 = new_positions[j].1;
 
-            let mut should_skip = false;
-            for y in y1.min(y2)..=y1.max(y2) {
-                for x in x1.min(x2)..=x1.max(x2) {
-                    if board[y][x] != 'X' && board[y][x] != '#' {
-                        should_skip = true;
-                    }
-                }
-            }
+            // let mut should_skip = false;
+            // for y in y1.min(y2)..=y1.max(y2) {
+            //     for x in x1.min(x2)..=x1.max(x2) {
+            //         if board[y][x] != 'X' && board[y][x] != '#' {
+            //             should_skip = true;
+            //         }
+            //     }
+            // }
 
-            if should_skip {
-                println!("({x1}, {y1}) ({x2}, {y2})");
-                continue;
-            }
+            // if should_skip {
+            //     println!("({x1}, {y1}) ({x2}, {y2})");
+            //     continue;
+            // }
 
             let new_area = area(x1 as i64, y1 as i64, x2 as i64, y2 as i64);
             if new_area > counter_pt2 {
