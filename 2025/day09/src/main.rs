@@ -61,39 +61,79 @@ fn main() {
         })
         .collect::<Vec<_>>();
 
-    // for i in 0..new_positions.len() {
-    //     println!("{:?} {:?}", positions[i], new_positions[i]);
-    // }
+    for i in 0..new_positions.len() {
+        println!("{:?} {:?}", positions[i], new_positions[i]);
+    }
 
     let mut board = (0..y_pos_map.len())
         .map(|_| (0..x_pos_map.len()).map(|_| '.').collect::<Vec<_>>())
         .collect::<Vec<_>>();
 
-    for pos in &new_positions {
-        board[pos.0][pos.1] = '#';
-    }
+    for i in 1..new_positions.len() {
+        let y1 = new_positions[i - 1].0;
+        let x1 = new_positions[i - 1].1;
+        let y2 = new_positions[i].0;
+        let x2 = new_positions[i].1;
 
-    let mut best_pos = ((-1, -1), (-1, -1));
-    for i in 0..new_positions.len() - 1 {
-        for j in i + 1..new_positions.len() {
-            let x1 = positions[i][0];
-            let y1 = positions[i][1];
-            let x2 = positions[j][0];
-            let y2 = positions[j][1];
+        assert!((x1 == x2) ^ (y1 == y2));
 
-            let new_area = area(x1, y1, x2, y2);
-            if new_area > counter_pt2 {
-                counter_pt2 = new_area;
-                best_pos = ((x1, y1), (x2, y2))
+        if x1 == x2 {
+            for y in y1.min(y2)..=y1.max(y2) {
+                board[y][x1] = 'X';
+            }
+        } else {
+            for x in x1.min(x2)..=x1.max(x2) {
+                board[y1][x] = 'X';
             }
         }
     }
 
-    counter_pt2 = area(best_pos.0.0, best_pos.0.1, best_pos.1.0, best_pos.1.1);
+    for pos in &new_positions {
+        board[pos.0][pos.1] = '#';
+    }
 
-    // for line in board {
+    // for line in &board {
     //     println!("{}", line.iter().collect::<String>());
     // }
+
+    let mut best_pos = ((0, 0), (0, 0));
+    for i in 0..new_positions.len() - 1 {
+        for j in i + 1..new_positions.len() {
+            let y1 = new_positions[i].0;
+            let x1 = new_positions[i].1;
+            let y2 = new_positions[j].0;
+            let x2 = new_positions[j].1;
+
+            let mut should_skip = false;
+            for y in y1.min(y2)..=y1.max(y2) {
+                for x in x1.min(x2)..=x1.max(x2) {
+                    if board[y][x] != 'X' && board[y][x] != '#' {
+                        should_skip = true;
+                    }
+                }
+            }
+
+            if should_skip {
+                println!("({x1}, {y1}) ({x2}, {y2})");
+                continue;
+            }
+
+            let new_area = area(x1 as i64, y1 as i64, x2 as i64, y2 as i64);
+            if new_area > counter_pt2 {
+                counter_pt2 = new_area;
+                best_pos = ((y1, x1), (y2, x2))
+            }
+        }
+    }
+
+    let y1 = y_pos_map.get(&best_pos.0.0).unwrap();
+    let y2 = y_pos_map.get(&best_pos.1.0).unwrap();
+    let x1 = x_pos_map.get(&best_pos.0.1).unwrap();
+    let x2 = x_pos_map.get(&best_pos.1.1).unwrap();
+
+    println!("({x1}, {y1}) ({x2}, {y2})");
+
+    counter_pt2 = area(**x1, **y1, **x2, **y2);
 
     println!("Part1: {counter_pt1}");
     println!("Part2: {counter_pt2}");
