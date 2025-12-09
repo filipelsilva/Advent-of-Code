@@ -88,15 +88,47 @@ fn main() {
         }
     }
 
+    for line in &board {
+        println!("{}", line.iter().collect::<String>());
+    }
+    println!("");
+
+    for y in 0..board.len() {
+        let mut is_inside = false;
+        for x in 0..board[0].len() {
+            if board[y][x] == 'X' && (x == 0 || (x > 0 && board[y][x - 1] != 'X')) {
+                is_inside = !is_inside;
+            } else if is_inside {
+                board[y][x] = 'X';
+            }
+        }
+    }
+
+    // for x in 0..board[0].len() {
+    //     let mut is_inside = false;
+    //     for y in 0..board.len() {
+    //         if board[y][x] == 'X' && (y == 0 || (x > 0 && board[y - 1][x] != 'X')) {
+    //             is_inside = !is_inside;
+    //         } else if is_inside {
+    //             board[y][x] = 'X';
+    //         }
+    //     }
+    // }
+
+    for line in &board {
+        println!("{}", line.iter().collect::<String>());
+    }
+    println!("");
+
     for pos in &new_positions {
         board[pos.0][pos.1] = '#';
     }
 
-    // for line in &board {
-    //     println!("{}", line.iter().collect::<String>());
-    // }
+    for line in &board {
+        println!("{}", line.iter().collect::<String>());
+    }
+    println!("");
 
-    let mut best_pos = ((0, 0), (0, 0));
     for i in 0..new_positions.len() - 1 {
         for j in i + 1..new_positions.len() {
             let y1 = new_positions[i].0;
@@ -104,19 +136,18 @@ fn main() {
             let y2 = new_positions[j].0;
             let x2 = new_positions[j].1;
 
-            // let mut should_skip = false;
-            // for y in y1.min(y2)..=y1.max(y2) {
-            //     for x in x1.min(x2)..=x1.max(x2) {
-            //         if board[y][x] != 'X' && board[y][x] != '#' {
-            //             should_skip = true;
-            //         }
-            //     }
-            // }
+            let mut should_skip = false;
+            for y in y1.min(y2)..=y1.max(y2) {
+                for x in x1.min(x2)..=x1.max(x2) {
+                    if board[y][x] != 'X' && board[y][x] != '#' {
+                        should_skip = true;
+                    }
+                }
+            }
 
-            // if should_skip {
-            //     println!("({x1}, {y1}) ({x2}, {y2})");
-            //     continue;
-            // }
+            if should_skip {
+                continue;
+            }
 
             let orig_y1 = y_pos_map.get(&y1).unwrap();
             let orig_y2 = y_pos_map.get(&y2).unwrap();
@@ -124,11 +155,10 @@ fn main() {
             let orig_x2 = x_pos_map.get(&x2).unwrap();
             let new_area = area(**orig_x1, **orig_y1, **orig_x2, **orig_y2);
 
-            // println!("({x1}, {y1}) ({x2}, {y2}) - {new_area}");
+            println!("({orig_x1}, {orig_y1}) ({orig_x2}, {orig_y2}) - {new_area}");
 
             if new_area > counter_pt2 {
                 counter_pt2 = new_area;
-                best_pos = ((y1, x1), (y2, x2))
             }
         }
     }
