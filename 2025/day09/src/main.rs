@@ -1,8 +1,44 @@
-use std::{collections::HashMap, fs};
+use std::{
+    collections::{HashMap, VecDeque},
+    fs,
+};
 
-fn fill_inside(g: &mut Vec<Vec<char>>) -> &Vec<Vec<char>> {
-    // TODO this
-    g
+fn fill_inside(board: &mut Vec<Vec<char>>) -> &Vec<Vec<char>> {
+    let mut starting_point = (0, 0);
+    'outer: for y in 0..board.len() {
+        for x in 2..board[0].len() {
+            if board[y][x - 2] != board[y][x - 1]
+                && board[y][x - 1] != board[y][x]
+                && board[y][x - 2] == board[y][x]
+            {
+                starting_point = (y, x);
+                assert!(board[y][x] == '.');
+                break 'outer;
+            }
+        }
+    }
+
+    let mut positions_to_visit = VecDeque::from([starting_point]);
+
+    while !positions_to_visit.is_empty() {
+        let (y, x) = positions_to_visit.pop_front().unwrap();
+        board[y][x] = 'X';
+        for yy in y - 1..=y + 1 {
+            for xx in x - 1..=x + 1 {
+                if xx > 0
+                    && xx < board[0].len() - 1
+                    && yy > 0
+                    && yy < board.len() - 1
+                    && !positions_to_visit.contains(&(yy, xx))
+                    && board[yy][xx] == '.'
+                {
+                    positions_to_visit.push_back((yy, xx));
+                }
+            }
+        }
+    }
+
+    return board;
 }
 
 fn area(x1: i64, y1: i64, x2: i64, y2: i64) -> u64 {
@@ -94,17 +130,17 @@ fn main() {
         }
     }
 
-    for line in &board {
-        println!("{}", line.iter().collect::<String>());
-    }
-    println!("");
+    // for line in &board {
+    //     println!("{}", line.iter().collect::<String>());
+    // }
+    // println!("");
 
     board = fill_inside(&mut board).to_vec();
 
-    for line in &board {
-        println!("{}", line.iter().collect::<String>());
-    }
-    println!("");
+    // for line in &board {
+    //     println!("{}", line.iter().collect::<String>());
+    // }
+    // println!("");
 
     for pos in &new_positions {
         board[pos.0][pos.1] = '#';
