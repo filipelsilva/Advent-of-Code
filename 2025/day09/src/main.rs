@@ -36,6 +36,7 @@ fn main() {
         }
     }
 
+    // https://www.reddit.com/r/adventofcode/comments/1pikbpf/2025_day_9_part_2_my_general_trick_for_this_kind/
     let mut x_positions = positions.iter().map(|el| el[0]).collect::<Vec<_>>();
     let mut y_positions = positions.iter().map(|el| el[1]).collect::<Vec<_>>();
     x_positions.sort();
@@ -61,9 +62,9 @@ fn main() {
         })
         .collect::<Vec<_>>();
 
-    for i in 0..new_positions.len() {
-        println!("{:?} {:?}", positions[i], new_positions[i]);
-    }
+    // for i in 0..new_positions.len() {
+    //     println!("{:?} {:?}", positions[i], new_positions[i]);
+    // }
 
     let mut board = (0..y_pos_map.len())
         .map(|_| (0..x_pos_map.len()).map(|_| '.').collect::<Vec<_>>())
@@ -93,27 +94,32 @@ fn main() {
     }
     println!("");
 
+    // TODO need to find two islands here, at least
     for y in 0..board.len() {
-        let mut is_inside = false;
-        for x in 0..board[0].len() {
-            if board[y][x] == 'X' && (x == 0 || (x > 0 && board[y][x - 1] != 'X')) {
-                is_inside = !is_inside;
-            } else if is_inside {
+        let mut intersections = Vec::new();
+
+        for x in 1..board[0].len() {
+            if board[y][x - 1] != board[y][x] {
+                intersections.push(x);
+            }
+        }
+
+        // If odd number of intersections → shape is not closed; skip
+        if intersections.len() % 2 != 0 {
+            println!("WTF");
+            continue;
+        }
+
+        // Fill pairs of intersections
+        for pair in intersections.chunks(2) {
+            let start = pair[0];
+            let end = pair[1];
+
+            for x in start..end {
                 board[y][x] = 'X';
             }
         }
     }
-
-    // for x in 0..board[0].len() {
-    //     let mut is_inside = false;
-    //     for y in 0..board.len() {
-    //         if board[y][x] == 'X' && (y == 0 || (x > 0 && board[y - 1][x] != 'X')) {
-    //             is_inside = !is_inside;
-    //         } else if is_inside {
-    //             board[y][x] = 'X';
-    //         }
-    //     }
-    // }
 
     for line in &board {
         println!("{}", line.iter().collect::<String>());
@@ -124,10 +130,10 @@ fn main() {
         board[pos.0][pos.1] = '#';
     }
 
-    for line in &board {
-        println!("{}", line.iter().collect::<String>());
-    }
-    println!("");
+    // for line in &board {
+    //     println!("{}", line.iter().collect::<String>());
+    // }
+    // println!("");
 
     for i in 0..new_positions.len() - 1 {
         for j in i + 1..new_positions.len() {
@@ -155,7 +161,7 @@ fn main() {
             let orig_x2 = x_pos_map.get(&x2).unwrap();
             let new_area = area(**orig_x1, **orig_y1, **orig_x2, **orig_y2);
 
-            println!("({orig_x1}, {orig_y1}) ({orig_x2}, {orig_y2}) - {new_area}");
+            // println!("({orig_x1}, {orig_y1}) ({orig_x2}, {orig_y2}) - {new_area}");
 
             if new_area > counter_pt2 {
                 counter_pt2 = new_area;
