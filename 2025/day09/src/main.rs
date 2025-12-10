@@ -1,5 +1,10 @@
 use std::{collections::HashMap, fs};
 
+fn fill_inside(g: &mut Vec<Vec<char>>) -> &Vec<Vec<char>> {
+    // TODO this
+    g
+}
+
 fn area(x1: i64, y1: i64, x2: i64, y2: i64) -> u64 {
     let x_delta = (x1 - x2).abs() + 1;
     let y_delta = (y1 - y2).abs() + 1;
@@ -94,32 +99,7 @@ fn main() {
     }
     println!("");
 
-    // TODO need to find two islands here, at least
-    for y in 0..board.len() {
-        let mut intersections = Vec::new();
-
-        for x in 1..board[0].len() {
-            if board[y][x - 1] != board[y][x] {
-                intersections.push(x);
-            }
-        }
-
-        // If odd number of intersections → shape is not closed; skip
-        if intersections.len() % 2 != 0 {
-            println!("WTF");
-            continue;
-        }
-
-        // Fill pairs of intersections
-        for pair in intersections.chunks(2) {
-            let start = pair[0];
-            let end = pair[1];
-
-            for x in start..end {
-                board[y][x] = 'X';
-            }
-        }
-    }
+    board = fill_inside(&mut board).to_vec();
 
     for line in &board {
         println!("{}", line.iter().collect::<String>());
